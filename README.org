@@ -5,7 +5,7 @@ Using ~org-protocol~, download a file, store it relative to ~org-roam-directory~
 Useful for downloading and linking to attachments, such as PDF files or images, to ~org-roam~ nodes that are created while one is surfing the Web.
 ** Usage
 #+BEGIN_SRC shell
-emacsclient --alternate-editor= --reuse-frame org-protocol://roam-download?url=https%3A%2F%2Fexample.com%2F&title=Example+Domain
+emacsclient --alternate-editor= --reuse-frame 'org-protocol://roam-download?url=https%3A%2F%2Fexample.com%2F&title=Example+Domain'
 #+END_SRC
 To invoke while browsing the Web, create a bookmark containing the following,
 #+BEGIN_SRC js
