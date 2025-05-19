@@ -1,0 +1,29 @@
+#+AUTHOR: Selwyn Simsek
+* ~org-roam-download~
+Using ~org-protocol~, download a file, store it relative to ~org-roam-directory~, and create an ~org-link~ to the local stored copy.
+** About
+Useful for downloading and linking to attachments, such as PDF files or images, to ~org-roam~ nodes that are created while one is surfing the Web.
+** Usage
+#+BEGIN_SRC shell
+emacsclient --alternate-editor= --reuse-frame org-protocol://roam-download?url=https%3A%2F%2Fexample.com%2F&title=Example+Domain
+#+END_SRC
+To invoke while browsing the Web, create a bookmark containing the following,
+#+BEGIN_SRC js
+javascript:location.href='org-protocol://roam-download?' + new URLSearchParams({url:location.href, title:document.title}); void(0);
+#+END_SRC
+and navigate to it whenever you want to save some content locally.
+This will download the web page you are on to a subdirectory relative to ~org-roam-directory~, inferring a sensible file extension given the MIME type, and store an ~org-link~ to the downloaded content.
+** Setup
+Install and load the package.
+~org-roam~ is a requirement.
+By default, links are created relative to ~org-roam-directory~.
+This is done to avoid links breaking in case the ~org-roam-directory~ is moved to a different location.
+However, this means that links will work only for org-roam files that are in ~org-roam-directory~ and not one of its subdirectories.
+This is because the links are created relative to ~org-roam-directory~, but there is no way of inferring at link creation time the location of an org file that the link will be inserted into.
+Consequently, this means that links within files in the ~org-roam-dailies-directory~ will not work.
+A useful workaround is to symlink ~org-roam-dailies-directory/data/~ to ~org-roam-directory/data~, and similarly in any other subdirectories of org-roam-directory.
+Alternatively, one can set ~org-roam-download-create-relative-links~ to NIL to create absolute links instead, in which case no workaround is needed.
+** Warning
+This package is not the finished product yet.
+As it downloads arbitrary content from the internet there are inherent security issues.
+Use with caution and at your own risk!
