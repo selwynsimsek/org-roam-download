@@ -5,14 +5,23 @@
 ;; URL: https://github.com/selwynsimsek/org-roam-download
 ;; Keywords: org-mode, roam, convenience
 ;; Version: 0.1
-;; Package-Requires: ((emacs "26.1") (org "9.3"))
+;; Package-Requires: ((emacs "27.1") (org "9.3"))
+
+;;; Commentary:
+
+;; This package installs an org-protocol custom handler that lets one download a file, store it relative to org-roam-directory, and create an ~org-link~ to the local stored copy.
+;;
+;;
+;;
+
+;;; Code:
 
 (require 'org-protocol)
 (require 'org-roam)
 (require 'url)
 
 (defgroup org-roam-download nil
-  "Download files and store them relative to org-roam-directory using org-protocol"
+  "Download files and store them relative to org-roam-directory using org-protocol."
   :group 'org-roam)
 
 (defcustom org-roam-download-relative-directory "data"
@@ -22,12 +31,12 @@
 
 (defcustom org-roam-download-create-relative-links t
   "If non-NIL, links are created relative to org-roam-directory.
-   If NIL, an absolute link is created instead."
+If NIL, an absolute link is created instead."
   :type 'boolean
   :group 'org-roam-download)
 
 (defcustom org-roam-download-x-focus-frame nil
-  "If non-NIL, invokes (x-focus-frame nil) to bring emacs to the forefront upon downloading a file."
+  "If non-NIL, invoke (x-focus-frame nil) upon downloading a file."
   :type 'boolean
   :group 'org-roam-download)
 
@@ -35,17 +44,19 @@
   '((".txt" . "text/plain")
     (".jpg" . "image/jpeg")) ;; TODO insert more here. take from https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types ?
   "Sensible defaults to match MIME types to extensions."
-  :type 'list
+  :type 'sexp
   :group 'org-roam-download)
 
-(defun org-roam-alphanumeric-p (ch)
+(defun org-roam-download-alphanumeric-p (ch)
+  "Return T if CH is alphanumeric."
   (cl-find ch "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_"))
 
 (defun org-roam-download-sanitise (title)
-  (cl-remove-if-not #'org-roam-alphanumeric-p title))
+  "Sanitise the TITLE of some web page to contain only alphanumeric characters."
+  (cl-remove-if-not #'org-roam-download-alphanumeric-p title))
 
 (defun org-roam-download-content-type-from-url (url)
-  "Does a HEAD request to get the MIME type of the content."
+  "Perform a HEAD request to get the MIME type of the content at URL."
   (with-current-buffer
       (let ((url-request-method "HEAD"))
         (url-retrieve-synchronously url))
@@ -54,14 +65,14 @@
       (match-string 1 string))))
 
 (defun org-roam-download-extension-from-mime (mime-type)
-  "Tries to infer a sensible file extension for the given MIME type."
+  "Attempt to infer a sensible file extension for the given MIME-TYPE."
   (or (cl-loop for (key . value) in (append org-roam-download-mime-sensible-defaults mailcap-mime-extensions)
                when (string= value mime-type)
                return key)
       ".unknown"))
 
 (defun org-roam-download (info)
-  "This handler downloads URL locally and adds a link.
+  "Download URL locally and add a link.
 
 INFO is an alist containing additional information passed by the protocol URL.
 It should contain the FILE key, pointing to the path of the file to open.
@@ -97,3 +108,4 @@ org-protocol://roam-download?url=URL&title=TITLE"
       org-protocol-protocol-alist)
 
 (provide 'org-roam-download)
+;;; org-roam-download.el ends here
